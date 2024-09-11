@@ -1,0 +1,38 @@
+
+    <html>
+    <head>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script>
+            function fetchData() {
+                fetch('/latest-data')
+                .then(response => response.json())
+                .then(data => {
+                    var trace = {
+                        x: data.times,
+                        open: data.open,
+                        high: data.high,
+                        low: data.low,
+                        close: data.close,
+                        type: 'candlestick'
+                    };
+                    var layout = {
+                        title: '10-Second OHLC Candlestick Chart',
+                        xaxis: { title: 'Time' },
+                        yaxis: { title: 'Price' },
+                        xaxis_rangeslider: { visible: false },
+                        height: 800  // Ensure the height matches the server-side chart
+                    };
+                    Plotly.react('chart', [trace], layout);
+                });
+            }
+            setInterval(fetchData, 10000);  // Fetch data every 10 seconds
+        </script>
+    </head>
+    <body>
+        <div id="chart"></div>
+        <script>
+            fetchData();  // Initial data load
+        </script>
+    </body>
+    </html>
+    

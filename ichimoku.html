@@ -1,0 +1,68 @@
+
+    <html>
+    <head>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script>
+            var layout = {
+                template: 'plotly_dark',
+                title: 'Cloud Test',
+                xaxis: { title: 'Time' },
+                yaxis: { title: 'Price' },
+                xaxis_rangeslider: { visible: false },
+                height: 600
+            };
+
+            function fetchData() {
+                fetch('/latest-data')
+                .then(response => response.json())
+                .then(data => {
+                    var trace1 = {
+                        x: data.times,
+                        open: data.open,
+                        high: data.high,
+                        low: data.low,
+                        close: data.close,
+                        type: 'candlestick',
+                        name: 'Candlestick'
+                    };
+                    
+                    var trace2 = {
+                        x: data.times,
+                        y: data.tenkan,
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: 'Tenkan-sen',
+                        line: { color: 'blue' }
+                    };
+                    
+                    var trace3 = {
+                        x: data.times,
+                        y: data.kijun,
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: 'Kijun-sen',
+                        line: { color: 'red' }
+                    };
+
+                    Plotly.react('chart', [trace1, trace2, trace3], layout);
+
+                    // Update candle counter
+                    document.getElementById('candleCount').innerText = 'Number of Candles: ' + data.count;
+                })
+                .catch(error => {
+                    console.error('Error fetching or plotting data:', error);
+                });
+            }
+
+            setInterval(fetchData, 5000);  // every 5 seconds
+        </script>
+    </head>
+    <body>
+        <div id="chart"></div>
+        <div id="candleCount" style="margin-top: 20px; font-size: 18px; color: white;"></div>
+        <script>
+            fetchData();  // Initial data fetch
+        </script>
+    </body>
+    </html>
+    
